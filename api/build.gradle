@@ -1,0 +1,15 @@
+plugins {
+    id 'org.springframework.boot'
+}
+
+dependencies {
+    implementation project(':service-auth')
+    implementation project(':service-stock')
+    implementation project(':service-trading')
+    implementation project(':service-portfolio')
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+}
+
+application {
+    mainClass = 'com.example.api.ApiApplication'
+}
