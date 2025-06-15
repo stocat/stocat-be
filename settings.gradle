@@ -1,4 +1,1 @@
-rootProject.name = 'my-trading-app'
-include 'common', 'domain', 'persistence', 'security'
-include 'service-auth', 'service-stock', 'service-trading', 'service-portfolio'
-include 'api', 'websocket'
+rootProject.name = 'stocat'
