@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: stock-scraper
+
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379
+
+# application-mock.yml
+kis:
+  client:
+    id: PS1MPI6vlpp5O4oUWKdJ5Jlzv8SOZlLZncmd
+    secret: a+RNn2Z18tnNoJdzEBErxtjM1KxFHBaEp6M56pe2pTMSxKCIcvJpWpZhCL7M+xXkEd7cQCkGiOjVvb3PCR3laItX1+auMRSEVLAD55E4zSR+VU6YeP1+wG3bWFx6LGNpoWUO/y3ablGNd8pWMNVZxRiwmeuwkLyFaKD+5xtWkHIIR+y5tVs=
+  websocket-url: ws://ops.koreainvestment.com:31000
+  auth-base-url: https://openapivts.koreainvestment.com:29443
+
