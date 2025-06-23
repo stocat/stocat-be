@@ -1,1 +1,4 @@
 rootProject.name = 'stocat'
+include 'crypto-scraper'
+include 'crypto-websocket-api'
+include 'common-redis'
