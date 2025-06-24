@@ -1,22 +1,19 @@
 package com.stocat.crypto.scraper.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stocat.crypto.scraper.dto.TradeDto;
-import jakarta.annotation.PostConstruct;
+import com.stocat.crypto.scraper.config.UpbitApiProperties;
+import com.stocat.crypto.scraper.messaging.event.TradeInfo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.net.URI;
 import java.util.List;
-
-import static com.stocat.common.redis.constants.CryptoKeys.CRYPTO_TRADES;
 
 /**
  * SubscriptionCodeService.codeFlux()에서 전달된 종목 리스트마다
@@ -24,42 +21,36 @@ import static com.stocat.common.redis.constants.CryptoKeys.CRYPTO_TRADES;
  */
 @Service
 @RequiredArgsConstructor
-public class UpbitWebSocketScraperService {
-    private final SubscriptionCodeService codes;
-    private final ReactiveStringRedisTemplate redisTemplate;
-    private final ObjectMapper mapper = new ObjectMapper();
-    private final ReactorNettyWebSocketClient wsClient = new ReactorNettyWebSocketClient();
-
-    @Value("${UPBIT_WS_URL:wss://api.upbit.com/websocket/v1}")
-    private String wsUrl;
-
-    @PostConstruct
-    public void start() {
-        codes.codeFlux()
-                .switchMap(this::connectAndPublish)
-                .subscribe(
-                        null,
-                        err -> System.err.println("WebSocket 오류: " + err.getMessage())
-                );
-    }
+public class UpbitCryptoScrapeService {
+    private final ObjectMapper mapper;
+    private final ReactorNettyWebSocketClient webSocketClient;
+    private final UpbitApiProperties upbitApiProperties;
 
     /**
-     * 주어진 종목 리스트로 WS 연결 → 메시지 처리 → Redis 퍼블리시
+     * 주어진 심볼 리스트로 WebSocket에 연결하여
+     * 단순히 TradeDto 파이프라인만 반환합니다.
      */
-    private Mono<Void> connectAndPublish(List<String> symbols) {
+    public Flux<TradeInfo> streamTrades(List<String> symbols) {
         String payload = buildSubscribePayload(symbols);
-        return wsClient.execute(
-                URI.create(wsUrl),
-                session -> session
-                        .send(Mono.just(session.textMessage(payload)))
-                        .thenMany(session.receive()
-                                .map(WebSocketMessage::getPayloadAsText)
-                                .flatMap(this::parseJson)
-                                .filter(this::isTrade)
-                                .map(this::toTradeDto)
-                                .flatMap(this::publishToRedis)
+
+        return Flux.create(sink ->
+                webSocketClient.execute(
+                                URI.create(upbitApiProperties.getWsUrl()),
+                                session -> session
+                                        .send(Mono.just(session.textMessage(payload)))
+                                        .thenMany(
+                                                session.receive()
+                                                        .map(WebSocketMessage::getPayloadAsText)
+                                                        .flatMap(this::parseJson)
+                                                        .filter(this::isTrade)
+                                                        .map(this::toTradeDto)
+                                                        .doOnNext(sink::next)
+                                        )
+                                        .then()
                         )
-                        .then()
+                        .doOnError(sink::error)
+                        .subscribeOn(Schedulers.boundedElastic())
+                        .subscribe()
         );
     }
 
@@ -86,7 +77,6 @@ public class UpbitWebSocketScraperService {
      */
     private Mono<JsonNode> parseJson(String raw) {
         return Mono.fromCallable(() -> mapper.readTree(raw))
-                // 파싱 실패 시 빈값으로 폴링아웃
                 .onErrorResume(e -> Mono.empty());
     }
 
@@ -100,31 +90,16 @@ public class UpbitWebSocketScraperService {
     /**
      * JsonNode를 TradeDto로 변환(체결가, 등락가, 등락률 계산 포함).
      */
-    private TradeDto toTradeDto(JsonNode node) {
+    private TradeInfo toTradeDto(JsonNode node) {
         double price = node.path("tp").asDouble();
         double prevClose = node.path("pcp").asDouble();
         double change = price - prevClose;
         double changeRate = change / prevClose;
-        return new TradeDto(
+        return new TradeInfo(
                 node.path("cd").asText(),
                 price,
                 change,
                 changeRate
         );
     }
-
-    /**
-     * TradeDto를 JSON으로 직렬화하여 Redis 채널에 발행합니다.
-     *
-     * @return 퍼블리시 후 구독자 수
-     */
-    private Mono<Long> publishToRedis(TradeDto dto) {
-        try {
-            String json = mapper.writeValueAsString(dto);
-            return redisTemplate.convertAndSend(CRYPTO_TRADES, json);
-        } catch (JsonProcessingException e) {
-            return Mono.error(e);
-        }
-    }
-
 }

@@ -1,12 +1,15 @@
 package com.stocat.crypto.scraper.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stocat.common.redis.constants.CryptoKeys;
+import com.stocat.crypto.scraper.messaging.event.TradeInfo;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
 import java.util.List;
@@ -18,11 +21,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SubscriptionCodeService {
-    private final ReactiveStringRedisTemplate redisTemplate;
-    private final Sinks.Many<List<String>> sink = Sinks.many().replay().latest();
 
-    @Value("${subscription.redis.key:crypto:subscribe_codes}")
-    private String redisKey;
+    private final ReactiveStringRedisTemplate redisTemplate;
+    private final ObjectMapper mapper;
+
+    private final Sinks.Many<List<String>> sink = Sinks.many().replay().latest();
 
     /**
      * 애플리케이션 시작 시 한 번 구독 리스트를 로드합니다.
@@ -33,12 +36,11 @@ public class SubscriptionCodeService {
     }
 
     /**
-     * 매일 00:00에 Redis에서 리스트를 다시 읽어 와서 구독 Flux에 푸시합니다.
+     * Redis에서 리스트를 다시 읽어 와서 구독 Flux에 푸시합니다.
      */
-    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     public void reloadCodes() {
-        redisTemplate.opsForList()
-                .range(redisKey, 0, -1)
+        redisTemplate.opsForSet()
+                .members(CryptoKeys.CRYPTO_SUBSCRIBE_CODES)
                 .collectList()
                 .filter(list -> !list.isEmpty())
                 .doOnNext(sink::tryEmitNext)
@@ -52,5 +54,33 @@ public class SubscriptionCodeService {
      */
     public Flux<List<String>> codeFlux() {
         return sink.asFlux();
+    }
+
+    /**
+     * 1) 기존 hotKey 리스트 삭제 후 RPUSH
+     * 2) 같은 5개 코드를 subscription.redisKey에도 RPUSH
+     * → SubscriptionCodeService가 자동 재구독
+     */
+    public void refreshHotAndSubscribeCodes(String[] codes) {
+        redisTemplate.delete(CryptoKeys.CRYPTO_HOT_CODES)
+                .then(redisTemplate.opsForSet().add(CryptoKeys.CRYPTO_HOT_CODES, codes))
+                .then(redisTemplate.opsForSet().add(CryptoKeys.CRYPTO_SUBSCRIBE_CODES, codes))
+                .subscribe(count -> System.out.println("Hot codes updated (" + count + " entries pushed)")
+                        , err -> System.err.println("Failed to update hot codes: " + err.getMessage()))
+        ;
+    }
+
+    /**
+     * TradeDto를 JSON으로 직렬화하여 Redis 채널에 발행합니다.
+     *
+     * @return 퍼블리시 후 구독자 수
+     */
+    public Mono<Long> publishTrades(TradeInfo dto) {
+        try {
+            String json = mapper.writeValueAsString(dto);
+            return redisTemplate.convertAndSend(CryptoKeys.CRYPTO_TRADES, json);
+        } catch (JsonProcessingException e) {
+            return Mono.error(e);
+        }
     }
 }
