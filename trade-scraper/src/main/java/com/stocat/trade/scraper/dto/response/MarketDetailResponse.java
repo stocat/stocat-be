@@ -2,35 +2,42 @@ package com.stocat.trade.scraper.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Map;
-
 /**
- * /v1/market/all?isDetails=true 응답 한 건을 매핑합니다.
+ * /v1/ticker 응답 한 건을 매핑합니다.
  */
 public record MarketDetailResponse(
         @JsonProperty("market") String market,
-        @JsonProperty("korean_name") String koreanName,
-        @JsonProperty("english_name") String englishName,
-        @JsonProperty("market_event") MarketEvent marketEvent
+        @JsonProperty("trade_date") String tradeDate,
+        @JsonProperty("trade_time") String tradeTime,
+        @JsonProperty("trade_date_kst") String tradeDateKst,
+        @JsonProperty("trade_time_kst") String tradeTimeKst,
+        @JsonProperty("trade_timestamp") long tradeTimestamp,
+        @JsonProperty("opening_price") double openingPrice,
+        @JsonProperty("high_price") double highPrice,
+        @JsonProperty("low_price") double lowPrice,
+        @JsonProperty("trade_price") double tradePrice,
+        @JsonProperty("prev_closing_price") double prevClosingPrice,
+        @JsonProperty("change") String change,
+        @JsonProperty("change_price") double changePrice,
+        @JsonProperty("change_rate") double changeRate,
+        @JsonProperty("signed_change_price") double signedChangePrice,
+        @JsonProperty("signed_change_rate") double signedChangeRate,
+        @JsonProperty("trade_volume") double tradeVolume,
+        @JsonProperty("acc_trade_price") double accTradePrice,
+        @JsonProperty("acc_trade_price_24h") double accTradePrice24h,
+        @JsonProperty("acc_trade_volume") double accTradeVolume,
+        @JsonProperty("acc_trade_volume_24h") double accTradeVolume24h,
+        @JsonProperty("highest_52_week_price") double highest52WeekPrice,
+        @JsonProperty("highest_52_week_date") String highest52WeekDate,
+        @JsonProperty("lowest_52_week_price") double lowest52WeekPrice,
+        @JsonProperty("lowest_52_week_date") String lowest52WeekDate,
+        @JsonProperty("timestamp") long timestamp
 ) {
-    public record MarketEvent(
-            @JsonProperty("warning") boolean warning,
-            /**
-             * "caution" 필드는 이벤트명→Boolean 구조입니다.
-             * 실제 JSON:
-             *   "caution": {
-             *     "TRADING_VOLUME_SOARING": false,
-             *     ...
-             *   }
-             */
-            @JsonProperty("caution") Map<String, Boolean> caution
-    ) { }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof MarketDetailResponse other)) return false;
-        return market != null && market.equals(other.market);
+        if (!(o instanceof MarketDetailResponse that)) return false;
+        return market != null && market.equals(that.market);
     }
 
     @Override
