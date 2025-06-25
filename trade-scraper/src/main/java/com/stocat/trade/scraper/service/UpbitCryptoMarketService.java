@@ -9,7 +9,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Upbit REST API 를 호출하여
@@ -51,27 +50,55 @@ public class UpbitCryptoMarketService {
      * 2) allDetails 에서 모든 market 코드만 뽑아서 셔플
      * 3) 두 스트림을 합친 뒤 distinct() -> limit 개수만큼 반환
      */
-    private List<MarketDetailResponse> pickOrFill(List<MarketDetailResponse> allDetails, int limit) {
-        List<MarketDetailResponse> soaring = allDetails.stream()
-                .filter(md -> md.marketEvent() != null && md.marketEvent().caution() != null)
-                .filter(md -> md.marketEvent().caution().entrySet()
-                        .stream().anyMatch(entry -> entry.getValue() != null && entry.getValue()))
-                .distinct()
-                .collect(Collectors.toList());
+    private List<MarketDetailResponse> pickOrFill(Collection<MarketDetailResponse> allDetails, int limit) {
+        List<MarketDetailResponse> marketList = new ArrayList<>(getVolumeSoaring(allDetails));
+        Collections.shuffle(marketList);
 
-        List<MarketDetailResponse> allCodes = allDetails.stream()
-                .distinct()
-                .collect(Collectors.toList());
+        if (marketList.size() >= limit) {
+            return marketList.stream()
+                    .limit(limit)
+                    .collect(Collectors.toList());
+        }
 
-        Collections.shuffle(soaring);
-        Collections.shuffle(allCodes);
+        int remaining = limit - marketList.size();
+        List<MarketDetailResponse> otherCaution = getSoaringWithoutVolume(allDetails, marketList);
+        Collections.shuffle(otherCaution);
 
-        // SOARING 우선, 부족하면 전체에서 채워서 limit 개수 리턴
-        return Stream.concat(soaring.stream(), allCodes.stream())
-                .distinct()
-                .limit(limit)
-                .collect(Collectors.toList());
+        otherCaution = otherCaution.stream().limit(remaining).toList();
+        marketList.addAll(otherCaution);
+
+        if (marketList.size() >= limit) {
+            return marketList.stream()
+                    .limit(limit)
+                    .collect(Collectors.toList());
+        }
+
+        remaining = limit - marketList.size();
+        List<MarketDetailResponse> reamainList = allDetails.stream()
+                .filter(list -> !marketList.contains(list))
+                .limit(remaining)
+                .toList();
+
+        marketList.addAll(reamainList);
+        return marketList;
     }
 
+    private List<MarketDetailResponse> getSoaringWithoutVolume(Collection<MarketDetailResponse> allDetails, List<MarketDetailResponse> volSoaring) {
+        return allDetails.stream()
+                .filter(md -> md.marketEvent() != null && md.marketEvent().caution() != null)
+                .filter(md -> md.marketEvent().caution().entrySet().stream()
+                        .anyMatch(e -> Boolean.TRUE.equals(e.getValue())))
+                .filter(md -> !volSoaring.contains(md))
+                .distinct()
+                .toList();
+    }
+
+    private List<MarketDetailResponse> getVolumeSoaring(Collection<MarketDetailResponse> allDetails) {
+        return allDetails.stream()
+                .filter(md -> md.marketEvent() != null && md.marketEvent().caution() != null)
+                .filter(md -> Boolean.TRUE.equals(md.marketEvent().caution().get("TRADING_VOLUME_SOARING")))
+                .distinct()
+                .toList();
+    }
 
 }
