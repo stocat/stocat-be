@@ -8,5 +8,20 @@ services:
     volumes:
       - redis_data:/data
     command: ["redis-server", "--appendonly", "yes"]
+
+  db:
+    image: postgres:15
+    container_name: stocat-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: stocat_local
+      POSTGRES_USER: stocat
+      POSTGRES_PASSWORD: stocat
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
 volumes:
   redis_data:
+  db-data:

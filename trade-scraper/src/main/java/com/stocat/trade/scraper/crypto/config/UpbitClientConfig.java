@@ -1,4 +1,4 @@
-package com.stocat.trade.scraper.config;
+package com.stocat.trade.scraper.crypto.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

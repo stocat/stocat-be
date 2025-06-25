@@ -1,4 +1,4 @@
-package com.stocat.trade.scraper.messaging.event;
+package com.stocat.trade.scraper.crypto.messaging.event;
 
 /**
  * 체결 정보용 DTO

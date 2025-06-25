@@ -1,4 +1,4 @@
-package com.stocat.trade.scraper.config;
+package com.stocat.trade.scraper.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;

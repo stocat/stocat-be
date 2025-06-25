@@ -1,4 +1,4 @@
-package com.stocat.trade.scraper.scheduler;
+package com.stocat.trade.scraper.crypto.scheduler;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;

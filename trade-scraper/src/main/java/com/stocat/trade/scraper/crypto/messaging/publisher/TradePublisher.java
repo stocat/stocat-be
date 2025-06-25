@@ -1,7 +1,7 @@
-package com.stocat.trade.scraper.messaging.publisher;
+package com.stocat.trade.scraper.crypto.messaging.publisher;
 
-import com.stocat.trade.scraper.service.SubscriptionCodeService;
-import com.stocat.trade.scraper.service.UpbitCryptoScrapeService;
+import com.stocat.trade.scraper.crypto.service.SubscriptionCodeService;
+import com.stocat.trade.scraper.crypto.service.UpbitCryptoScrapeService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

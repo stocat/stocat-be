@@ -1,8 +1,8 @@
-package com.stocat.trade.scraper.service;
+package com.stocat.trade.scraper.crypto.service;
 
-import com.stocat.trade.scraper.dto.response.MarketDetailResponse;
-import com.stocat.trade.scraper.dto.response.MarketEventDetailResponse;
-import com.stocat.trade.scraper.dto.MarketInfo;
+import com.stocat.trade.scraper.crypto.dto.response.MarketTradeDetailResponse;
+import com.stocat.trade.scraper.crypto.dto.response.MarketEventDetailResponse;
+import com.stocat.trade.scraper.crypto.dto.MarketInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -22,29 +22,26 @@ public class UpbitCryptoMarketService {
 
     private final WebClient upbitWebClient;
 
-    public List<MarketDetailResponse> getTopKrwTradeCrypto(int n) {
+    public List<MarketTradeDetailResponse> getTopKrwTradeCrypto(int n) {
         return Objects.requireNonNull(upbitWebClient.get()
                         .uri(uri -> uri.path("/v1/ticker/all")
                                 .queryParam("quote_currencies", "KRW")
                                 .build())
                         .header(HttpHeaders.ACCEPT, "application/json")
                         .retrieve()
-                        .bodyToFlux(MarketDetailResponse.class)
+                        .bodyToFlux(MarketTradeDetailResponse.class)
                         .collectList()
                         .block())
                 .stream()
-                .sorted(Comparator.comparingDouble(MarketDetailResponse::accTradeVolume24h))
+                .sorted(Comparator.comparingDouble(MarketTradeDetailResponse::accTradeVolume24h))
                 .limit(n)
                 .toList();
     }
 
     /**
-     * SOARING 이벤트 종목 중 랜덤 샘플 n 개를 반환합니다.
-     * 만약 SOARING 종목이 n개 미만이라면, 전체 코드에서 채워 넣습니다.
-     * *** 경고 기준으로는 거래량이 없는 코인이 많아서 사용하지 않습니다. ***
+     * 전체 코인 종목 조회
      */
-    @Deprecated
-    public Set<MarketInfo> getDailyCrypto(int n) {
+    public Set<MarketInfo> getAllMarkets() {
         return upbitWebClient.get()
                 .uri(uri -> uri.path("/v1/market/all")
                         .queryParam("isDetails", "true")
@@ -53,7 +50,6 @@ public class UpbitCryptoMarketService {
                 .retrieve()
                 .bodyToFlux(MarketEventDetailResponse.class)
                 .collectList()
-                .map(list -> pickOrFill(list, n))
                 .map(this::toMarketInfo)
                 .block();
     }
@@ -67,6 +63,7 @@ public class UpbitCryptoMarketService {
      * 2) allDetails 에서 모든 market 코드만 뽑아서 셔플
      * 3) 두 스트림을 합친 뒤 distinct() -> limit 개수만큼 반환
      */
+    @Deprecated
     private List<MarketEventDetailResponse> pickOrFill(Collection<MarketEventDetailResponse> allDetails, int limit) {
         List<MarketEventDetailResponse> marketList = new ArrayList<>(getVolumeSoaring(allDetails));
         Collections.shuffle(marketList);

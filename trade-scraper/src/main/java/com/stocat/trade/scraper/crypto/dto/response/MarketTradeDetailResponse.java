@@ -1,11 +1,11 @@
-package com.stocat.trade.scraper.dto.response;
+package com.stocat.trade.scraper.crypto.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * /v1/ticker 응답 한 건을 매핑합니다.
  */
-public record MarketDetailResponse(
+public record MarketTradeDetailResponse(
         @JsonProperty("market") String market,
         @JsonProperty("trade_date") String tradeDate,
         @JsonProperty("trade_time") String tradeTime,
@@ -36,7 +36,7 @@ public record MarketDetailResponse(
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof MarketDetailResponse that)) return false;
+        if (!(o instanceof MarketTradeDetailResponse that)) return false;
         return market != null && market.equals(that.market);
     }
 

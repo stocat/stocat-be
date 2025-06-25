@@ -1,4 +1,4 @@
-package com.stocat.trade.scraper.dto;
+package com.stocat.trade.scraper.crypto.dto;
 
 /**
  * REST로 받은 시장 정보 중,

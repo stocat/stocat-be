@@ -1,9 +1,9 @@
-package com.stocat.trade.scraper.service;
+package com.stocat.trade.scraper.crypto.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stocat.common.redis.constants.CryptoKeys;
-import com.stocat.trade.scraper.messaging.event.TradeInfo;
+import com.stocat.trade.scraper.crypto.messaging.event.TradeInfo;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;

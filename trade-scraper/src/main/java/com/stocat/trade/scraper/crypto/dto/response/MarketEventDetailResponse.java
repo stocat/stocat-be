@@ -1,4 +1,4 @@
-package com.stocat.trade.scraper.dto.response;
+package com.stocat.trade.scraper.crypto.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

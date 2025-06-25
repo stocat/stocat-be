@@ -1,4 +1,4 @@
-package com.stocat.trade.scraper.config;
+package com.stocat.trade.scraper.crypto.config;
 
 import lombok.Getter;
 import lombok.Setter;

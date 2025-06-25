@@ -1,9 +1,9 @@
-package com.stocat.trade.scraper.service;
+package com.stocat.trade.scraper.crypto.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stocat.trade.scraper.config.UpbitApiProperties;
-import com.stocat.trade.scraper.messaging.event.TradeInfo;
+import com.stocat.trade.scraper.crypto.config.UpbitApiProperties;
+import com.stocat.trade.scraper.crypto.messaging.event.TradeInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.socket.WebSocketMessage;
