@@ -175,7 +175,7 @@ HTTP/1.1 200 OK
     "code":     "005930",
     "name":     "삼성전자",
     "quantity": 5,
-    "avgPrice": 76000
+    "avgPrice": 76000 # 1주 평균 금액
   },
   {
     "market":   "CRYPTO",
