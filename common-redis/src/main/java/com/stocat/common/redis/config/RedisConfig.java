@@ -7,11 +7,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.ReactiveRedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import static com.stocat.common.redis.constants.CryptoKeys.CRYPTO_TRADES;
 
@@ -21,14 +23,20 @@ import static com.stocat.common.redis.constants.CryptoKeys.CRYPTO_TRADES;
 @Configuration
 @EnableAutoConfiguration(exclude={RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class})
 public class RedisConfig {
+    @Bean
+    @ConfigurationProperties(prefix = "spring.data.redis")
+    public RedisStandaloneConfiguration redisStandaloneConfiguration() {
+        return new RedisStandaloneConfiguration();
+    }
+
     /**
      * Redis 연결 팩토리를 생성합니다.
      * @return LettuceConnectionFactory 인스턴스
      */
     @Primary
     @Bean
-    public ReactiveRedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory("localhost", 6379);
+    public ReactiveRedisConnectionFactory redisConnectionFactory(RedisStandaloneConfiguration configuration) {
+        return new LettuceConnectionFactory(configuration);
     }
 
     /**
