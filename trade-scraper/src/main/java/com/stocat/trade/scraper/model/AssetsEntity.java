@@ -1,10 +1,10 @@
 package com.stocat.trade.scraper.model;
 
+import com.stocat.common.mysql.model.BaseEntity;
 import com.stocat.trade.scraper.model.enums.AssetsCategory;
 import com.stocat.trade.scraper.model.enums.Currency;
 import jakarta.persistence.*;
 import lombok.*;
-import jakarta.persistence.Id;
 
 @Entity
 @Table(name = "assets")
@@ -13,7 +13,7 @@ import jakarta.persistence.Id;
 @AllArgsConstructor
 @Builder
 @ToString
-public class AssetsEntity {
+public class AssetsEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,13 +36,12 @@ public class AssetsEntity {
     private Currency currency;
 
     @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
+    private Boolean isActive;
 
 //    @Column(name = "raw_json", columnDefinition = "longtext", nullable = false)
 //    private String rawJson;
 
-    public void updateNames(String koName, String usName) {
-        this.koName = koName;
-        this.usName = usName;
+    public void deactivate() {
+        this.isActive = false;
     }
 }

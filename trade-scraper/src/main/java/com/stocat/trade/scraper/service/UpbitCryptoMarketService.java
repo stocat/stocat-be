@@ -1,8 +1,7 @@
 package com.stocat.trade.scraper.service;
 
-import com.stocat.trade.scraper.dto.response.MarketDetailResponse;
-import com.stocat.trade.scraper.dto.response.MarketEventDetailResponse;
 import com.stocat.trade.scraper.dto.MarketInfo;
+import com.stocat.trade.scraper.dto.response.MarketEventDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -22,20 +21,28 @@ public class UpbitCryptoMarketService {
 
     private final WebClient upbitWebClient;
 
-    public List<MarketDetailResponse> getTopKrwTradeCrypto(int n) {
+    public Set<MarketInfo> getTopKrwTradeCrypto(int n) {
         return Objects.requireNonNull(upbitWebClient.get()
-                        .uri(uri -> uri.path("/v1/ticker/all")
-                                .queryParam("quote_currencies", "KRW")
+                        .uri(uri -> uri.path("/v1/market/all")
+                                .queryParam("isDetails", "true")
                                 .build())
                         .header(HttpHeaders.ACCEPT, "application/json")
                         .retrieve()
-                        .bodyToFlux(MarketDetailResponse.class)
+                        .bodyToFlux(MarketEventDetailResponse.class)
                         .collectList()
                         .block())
                 .stream()
-                .sorted(Comparator.comparingDouble(MarketDetailResponse::accTradeVolume24h))
+                .filter(detail ->
+                        detail.marketEvent() != null &&
+                                detail.marketEvent().caution() != null &&
+                                Boolean.TRUE.equals(
+                                        detail.marketEvent().caution().get("TRADING_VOLUME_SOARING")
+                                )
+                )
+                .filter(detail -> detail.market().startsWith("KRW-"))
                 .limit(n)
-                .toList();
+                .map(detail -> new MarketInfo(detail.market(), detail.koreanName(), detail.englishName()))
+                .collect(Collectors.toSet());
     }
 
     /**
