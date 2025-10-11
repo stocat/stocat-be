@@ -65,6 +65,7 @@ public class UpbitCryptoMarketService {
                 .block();
     }
 
+    @Deprecated
     private Set<MarketInfo> toMarketInfo(List<MarketEventDetailResponse> response) {
         return response.stream().map(detail -> new MarketInfo(detail.market(), detail.koreanName(), detail.englishName())).collect(Collectors.toSet());
     }
@@ -74,6 +75,7 @@ public class UpbitCryptoMarketService {
      * 2) allDetails 에서 모든 market 코드만 뽑아서 셔플
      * 3) 두 스트림을 합친 뒤 distinct() -> limit 개수만큼 반환
      */
+    @Deprecated
     private List<MarketEventDetailResponse> pickOrFill(Collection<MarketEventDetailResponse> allDetails, int limit) {
         List<MarketEventDetailResponse> marketList = new ArrayList<>(getVolumeSoaring(allDetails));
         Collections.shuffle(marketList);
@@ -107,6 +109,7 @@ public class UpbitCryptoMarketService {
         return marketList;
     }
 
+    @Deprecated
     private List<MarketEventDetailResponse> getSoaringWithoutVolume(Collection<MarketEventDetailResponse> allDetails, List<MarketEventDetailResponse> volSoaring) {
         return allDetails.stream()
                 .filter(md -> md.marketEvent() != null && md.marketEvent().caution() != null)
@@ -117,6 +120,7 @@ public class UpbitCryptoMarketService {
                 .toList();
     }
 
+    @Deprecated
     private List<MarketEventDetailResponse> getVolumeSoaring(Collection<MarketEventDetailResponse> allDetails) {
         return allDetails.stream()
                 .filter(md -> md.marketEvent() != null && md.marketEvent().caution() != null)
