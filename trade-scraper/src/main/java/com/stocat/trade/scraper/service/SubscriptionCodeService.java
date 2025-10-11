@@ -53,7 +53,10 @@ public class SubscriptionCodeService {
                 .members(CryptoKeys.CRYPTO_SUBSCRIBE_CODES)
                 .collectList()
                 .filter(list -> !list.isEmpty())
+                .doOnNext(list -> log.debug("Redis 구독 코드 로드 완료: {}", list))
                 .doOnNext(sink::tryEmitNext)
+                .doOnSubscribe(sub -> log.debug("Redis 구독 코드 로드 시도"))
+                .doOnError(err -> log.error("Redis 구독 코드 로드 실패", err))
                 .subscribe();
     }
 
@@ -88,6 +91,8 @@ public class SubscriptionCodeService {
                         .build())
                 .toList();
         assetsRepository.saveAll(newAssets);
+        log.debug("DB 갱신 완료 - 저장된 자산 수: {}", newAssets.size());
+
 
         String[] codes = targetSymbols.stream()
                 .map(MarketInfo::code)
@@ -96,8 +101,9 @@ public class SubscriptionCodeService {
         redisTemplate.delete(CryptoKeys.CRYPTO_HOT_CODES)
                 .then(redisTemplate.opsForSet().add(CryptoKeys.CRYPTO_HOT_CODES, codes))
                 .then(redisTemplate.opsForSet().add(CryptoKeys.CRYPTO_SUBSCRIBE_CODES, codes))
-                .subscribe(count -> System.out.println("Hot codes updated (" + count + " entries pushed)")
-                        , err -> System.err.println("Failed to update hot codes: " + err.getMessage()))
+                .doOnSubscribe(sub -> log.debug("Redis 핫/구독 코드 갱신 시작 - targetCodes={}", targetSymbols))
+                .subscribe(count -> log.debug("Redis 핫/구독 코드 갱신 완료 - count={}", count)
+                        , err -> log.error("Redis 핫/구독 코드 갱신 실패", err))
         ;
     }
 
@@ -109,7 +115,9 @@ public class SubscriptionCodeService {
     public Mono<Long> publishTrades(TradeInfo dto) {
         try {
             String json = mapper.writeValueAsString(dto);
-            return redisTemplate.convertAndSend(CryptoKeys.CRYPTO_TRADES, json);
+            log.debug("Redis 퍼블리시 준비 - channel={}, payload={}", CryptoKeys.CRYPTO_TRADES, json);
+            return redisTemplate.convertAndSend(CryptoKeys.CRYPTO_TRADES, json)
+                    .doOnSuccess(count -> log.debug("Redis 퍼블리시 완료 - subscriberCount={} (구독자가 없을 경우 0)", count));
         } catch (JsonProcessingException e) {
             return Mono.error(e);
         }

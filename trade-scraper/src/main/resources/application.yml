@@ -24,3 +24,7 @@ upbit:
     rest-base-url: https://api.upbit.com
     ws-url: wss://api.upbit.com/websocket/v1
     top-limit: 5
+
+#logging:
+#  level:
+#    com.stocat.trade.scraper: DEBUG

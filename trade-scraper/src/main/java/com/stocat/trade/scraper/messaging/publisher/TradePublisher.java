@@ -4,9 +4,11 @@ import com.stocat.trade.scraper.service.SubscriptionCodeService;
 import com.stocat.trade.scraper.service.UpbitCryptoScrapeService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class TradePublisher {
 
@@ -17,8 +19,11 @@ public class TradePublisher {
     public void start() {
         // reloadCodes() 호출로 구독 키 리스트가 갱신될 때마다 websocket 다시 열고, 체결 데이터 redis 채널로 pub 파이프라인
         subscriptionCodeService.codeFlux()
+                .doOnSubscribe(sub -> log.debug("체결 퍼블리시 파이프라인 구독 시작"))
+                .doOnNext(codes -> log.debug("새 구독 코드 수신: {}", codes))
                 .switchMap(upbitCryptoScrapeService::streamTrades)
                 .flatMap(subscriptionCodeService::publishTrades)
+                .doOnError(err -> log.error("체결 퍼블리시 파이프라인 오류", err))
                 .subscribe(
                         null,
                         err -> System.err.println("WebSocket 오류: " + err.getMessage())
