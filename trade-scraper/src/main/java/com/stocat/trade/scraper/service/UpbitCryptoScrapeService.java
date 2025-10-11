@@ -4,7 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stocat.trade.scraper.config.UpbitApiProperties;
 import com.stocat.trade.scraper.messaging.event.TradeInfo;
+import com.stocat.trade.scraper.messaging.event.TradeSide;
+import com.stocat.trade.scraper.model.enums.Currency;
+import com.stocat.trade.scraper.util.TradeParsingUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
@@ -12,7 +16,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.math.BigDecimal;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -20,6 +26,7 @@ import java.util.List;
  * Upbit WS에 재구독하고, 수신된 체결 메시지를 Redis "crypto:trades" 채널에 퍼블리시합니다.
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UpbitCryptoScrapeService {
     private final ObjectMapper mapper;
@@ -28,7 +35,7 @@ public class UpbitCryptoScrapeService {
 
     /**
      * 주어진 심볼 리스트로 WebSocket에 연결하여
-     * 단순히 TradeDto 파이프라인만 반환합니다.
+     * TradeInfo 파이프라인을 반환합니다.
      */
     public Flux<TradeInfo> streamTrades(List<String> symbols) {
         String payload = buildSubscribePayload(symbols);
@@ -43,7 +50,7 @@ public class UpbitCryptoScrapeService {
                                                         .map(WebSocketMessage::getPayloadAsText)
                                                         .flatMap(this::parseJson)
                                                         .filter(this::isTrade)
-                                                        .map(this::toTradeDto)
+                                                        .map(this::toTradeInfo)
                                                         .doOnNext(sink::next)
                                         )
                                         .then()
@@ -88,18 +95,24 @@ public class UpbitCryptoScrapeService {
     }
 
     /**
-     * JsonNode를 TradeDto로 변환(체결가, 등락가, 등락률 계산 포함).
+     * JsonNode를 TradeInfo로 변환
      */
-    private TradeInfo toTradeDto(JsonNode node) {
-        double price = node.path("tp").asDouble();
-        double prevClose = node.path("pcp").asDouble();
-        double change = price - prevClose;
-        double changeRate = change / prevClose;
+    private TradeInfo toTradeInfo(JsonNode node) {
+        String code = node.path("cd").asText();
+        TradeSide side = TradeSide.fromUpbitAb(node.path("ab").asText());
+        BigDecimal qty = TradeParsingUtil.readBigDecimal(node, "tv");
+        BigDecimal price = TradeParsingUtil.readBigDecimal(node, "tp");
+        Currency currency = Currency.fromMarket(code);
+        LocalDateTime occurredAt = TradeParsingUtil.toOccurredAt(node);
         return new TradeInfo(
-                node.path("cd").asText(),
+                code,
+                side,
+                qty,
                 price,
-                change,
-                changeRate
+                currency,
+                BigDecimal.ZERO,
+                currency,
+                occurredAt
         );
     }
 }

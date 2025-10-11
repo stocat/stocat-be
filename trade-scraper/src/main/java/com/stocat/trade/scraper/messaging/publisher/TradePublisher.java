@@ -15,6 +15,7 @@ public class TradePublisher {
 
     @PostConstruct
     public void start() {
+        // reloadCodes() 호출로 구독 키 리스트가 갱신될 때마다 websocket 다시 열고, 체결 데이터 redis 채널로 pub 파이프라인
         subscriptionCodeService.codeFlux()
                 .switchMap(upbitCryptoScrapeService::streamTrades)
                 .flatMap(subscriptionCodeService::publishTrades)
