@@ -18,7 +18,7 @@ public class AssetsEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 20, unique = true)
+    @Column(nullable = false, length = 20)
     private String symbol; //  마켓 코드
 
     @Column(nullable = false, length = 100)
