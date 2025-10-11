@@ -10,10 +10,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
                 "com.stocat.common.mysql"
         }
 )
-public class TradeScraperApplication {
+public class AssetScraperApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(TradeScraperApplication.class, args);
+        SpringApplication.run(AssetScraperApplication.class, args);
     }
 
 }

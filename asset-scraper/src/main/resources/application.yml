@@ -27,4 +27,4 @@ upbit:
 
 #logging:
 #  level:
-#    com.stocat.trade.scraper: DEBUG
+#    com.stocat.asset.scraper: DEBUG
