@@ -1,4 +1,4 @@
-package com.stocat.common.mysql.config;
+package com.stocat.common.config;
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Configuration;

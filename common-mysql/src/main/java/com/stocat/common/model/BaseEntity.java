@@ -1,4 +1,4 @@
-package com.stocat.common.mysql.model;
+package com.stocat.common.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
