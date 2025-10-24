@@ -1,5 +1,5 @@
 rootProject.name = 'stocat'
-include 'trade-scraper'
+include 'asset-scraper'
 include 'trade-api'
 include 'trade-websocket-api'
 include 'common-redis'
