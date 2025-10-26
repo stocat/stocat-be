@@ -2,6 +2,9 @@ package com.stocat.authapi.service;
 
 import com.stocat.authapi.config.JwtClaimKeys;
 import com.stocat.authapi.config.JwtProvider;
+import com.stocat.authapi.controller.dto.AuthResponse;
+import com.stocat.authapi.controller.dto.LoginRequest;
+import com.stocat.authapi.controller.dto.SignupRequest;
 import com.stocat.authapi.exception.AuthErrorCode;
 import com.stocat.authapi.service.dto.*;
 import com.stocat.common.mysql.domain.member.domain.AuthProvider;
@@ -24,63 +27,45 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AuthFacadeTest {
+class AuthServiceTest {
 
     @Mock
-    private AuthCommandService commandService;
+    private MemberCommandService commandService;
     @Mock
-    private AuthQueryService queryService;
+    private MemberQueryService queryService;
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
     private JwtProvider jwtProvider;
 
-    private AuthFacade authFacade;
+    private AuthService authService;
 
     @BeforeEach
     void setUp() {
-        authFacade = new AuthFacade(commandService, queryService, passwordEncoder, jwtProvider);
+        authService = new AuthService(commandService, queryService, passwordEncoder, jwtProvider);
     }
 
     @Test
-    void 회원가입은_중복검사후_암호화된_비밀번호로_생성한다() {
+    void 회원가입은_CommandService에_위임한다() {
         SignupRequest request = new SignupRequest("고냥이", "cat@stocat.com", "plain");
-        when(queryService.existsByEmail(request.email())).thenReturn(false);
-        when(queryService.existsByNickname(request.nickname())).thenReturn(false);
-        when(passwordEncoder.encode("plain")).thenReturn("encoded");
 
-        authFacade.signup(request);
+        authService.signup(request);
 
-        ArgumentCaptor<CreateMemberCommand> captor = ArgumentCaptor.forClass(CreateMemberCommand.class);
-        verify(commandService).create(captor.capture());
-        CreateMemberCommand cmd = captor.getValue();
-        assertThat(cmd.nickname()).isEqualTo("고냥이");
-        assertThat(cmd.email()).isEqualTo("cat@stocat.com");
-        assertThat(cmd.encodedPassword()).isEqualTo("encoded");
-        verify(passwordEncoder).encode("plain");
+        verify(commandService, times(1))
+                .createLocalMember(eq("고냥이"), eq("cat@stocat.com"), eq("plain"));
+        verifyNoInteractions(queryService);
+        verifyNoInteractions(passwordEncoder);
     }
 
     @Test
-    void 회원가입에서_이메일이_중복이면_예외를_던진다() {
+    void 회원가입_예외는_CommandService에서_던진다() {
         SignupRequest request = new SignupRequest("고냥이", "cat@stocat.com", "plain");
-        when(queryService.existsByEmail(request.email())).thenReturn(true);
+        doThrow(new ApiException(AuthErrorCode.EMAIL_ALREADY_EXISTS))
+                .when(commandService).createLocalMember(anyString(), anyString(), anyString());
 
-        assertThatThrownBy(() -> authFacade.signup(request))
+        assertThatThrownBy(() -> authService.signup(request))
                 .isInstanceOf(ApiException.class)
                 .hasFieldOrPropertyWithValue("errorCode", AuthErrorCode.EMAIL_ALREADY_EXISTS);
-        verify(commandService, never()).create(any());
-    }
-
-    @Test
-    void 회원가입에서_닉네임이_중복이면_예외를_던진다() {
-        SignupRequest request = new SignupRequest("고냥이", "cat@stocat.com", "plain");
-        when(queryService.existsByEmail(request.email())).thenReturn(false);
-        when(queryService.existsByNickname(request.nickname())).thenReturn(true);
-
-        assertThatThrownBy(() -> authFacade.signup(request))
-                .isInstanceOf(ApiException.class)
-                .hasFieldOrPropertyWithValue("errorCode", AuthErrorCode.NICKNAME_ALREADY_EXISTS);
-        verify(commandService, never()).create(any());
     }
 
     @Test
@@ -92,7 +77,7 @@ class AuthFacadeTest {
         when(jwtProvider.createAccessToken(anyString(), anyMap())).thenReturn("access-token");
         when(jwtProvider.createRefreshToken(anyString())).thenReturn("refresh-token");
 
-        AuthResponse response = authFacade.login(request);
+        AuthResponse response = authService.login(request);
 
         assertThat(response.accessToken()).isEqualTo("access-token");
         assertThat(response.refreshToken()).isEqualTo("refresh-token");
@@ -112,7 +97,7 @@ class AuthFacadeTest {
         when(queryService.getMemberByEmail(request.email())).thenReturn(member);
         when(passwordEncoder.matches("plain", "encoded")).thenReturn(false);
 
-        assertThatThrownBy(() -> authFacade.login(request))
+        assertThatThrownBy(() -> authService.login(request))
                 .isInstanceOf(ApiException.class)
                 .hasFieldOrPropertyWithValue("errorCode", AuthErrorCode.INVALID_CREDENTIALS);
         verify(commandService, never()).markLoginAt(anyLong());
@@ -125,7 +110,7 @@ class AuthFacadeTest {
         MemberDto member = memberDto(1L, request.email(), null, MemberRole.USER);
         when(queryService.getMemberByEmail(request.email())).thenReturn(member);
 
-        assertThatThrownBy(() -> authFacade.login(request))
+        assertThatThrownBy(() -> authService.login(request))
                 .isInstanceOf(ApiException.class)
                 .hasFieldOrPropertyWithValue("errorCode", AuthErrorCode.INVALID_CREDENTIALS);
     }
