@@ -14,7 +14,7 @@ import java.util.Optional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class AuthQueryService {
+public class MemberQueryService {
 
     private final MemberRepository memberRepository;
 

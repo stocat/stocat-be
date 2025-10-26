@@ -2,11 +2,11 @@ package com.stocat.authapi.service;
 
 import com.stocat.authapi.config.JwtClaimKeys;
 import com.stocat.authapi.config.JwtProvider;
+import com.stocat.authapi.controller.dto.AuthResponse;
+import com.stocat.authapi.controller.dto.LoginRequest;
+import com.stocat.authapi.controller.dto.SignupRequest;
 import com.stocat.authapi.exception.AuthErrorCode;
-import com.stocat.authapi.service.dto.*;
-import com.stocat.common.mysql.domain.member.domain.AuthProvider;
-import com.stocat.common.mysql.domain.member.domain.MemberRole;
-import com.stocat.common.mysql.domain.member.domain.MemberStatus;
+import com.stocat.authapi.service.dto.MemberDto;
 import com.stocat.common.mysql.exception.ApiException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,10 +17,10 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class AuthFacade {
+public class AuthService {
 
-    private final AuthCommandService commandService;
-    private final AuthQueryService queryService;
+    private final MemberCommandService commandService;
+    private final MemberQueryService queryService;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
@@ -30,24 +30,7 @@ public class AuthFacade {
      * @param request 회원가입 req
      */
     public void signup(SignupRequest request) {
-        if (queryService.existsByEmail(request.email())) {
-            throw new ApiException(AuthErrorCode.EMAIL_ALREADY_EXISTS);
-        }
-        if (queryService.existsByNickname(request.nickname())) {
-            throw new ApiException(AuthErrorCode.NICKNAME_ALREADY_EXISTS);
-        }
-
-        String encoded = passwordEncoder.encode(request.password());
-        var cmd = new CreateMemberCommand(
-                request.nickname(),
-                request.email(),
-                encoded,
-                AuthProvider.LOCAL,
-                "",
-                MemberStatus.ACTIVE,
-                MemberRole.USER
-        );
-        commandService.create(cmd);
+        commandService.createLocalMember(request.nickname(), request.email(), request.password());
     }
 
     /**

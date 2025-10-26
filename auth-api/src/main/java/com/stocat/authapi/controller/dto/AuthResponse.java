@@ -1,4 +1,4 @@
-package com.stocat.authapi.service.dto;
+package com.stocat.authapi.controller.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

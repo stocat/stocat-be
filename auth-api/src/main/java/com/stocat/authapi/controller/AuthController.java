@@ -1,11 +1,11 @@
 package com.stocat.authapi.controller;
 
 import com.stocat.authapi.exception.AuthErrorCode;
-import com.stocat.authapi.service.AuthFacade;
-import com.stocat.authapi.service.dto.AuthErrorItem;
-import com.stocat.authapi.service.dto.AuthResponse;
-import com.stocat.authapi.service.dto.LoginRequest;
-import com.stocat.authapi.service.dto.SignupRequest;
+import com.stocat.authapi.service.AuthService;
+import com.stocat.authapi.controller.dto.AuthErrorCodeResponse;
+import com.stocat.authapi.controller.dto.AuthResponse;
+import com.stocat.authapi.controller.dto.LoginRequest;
+import com.stocat.authapi.controller.dto.SignupRequest;
 import com.stocat.common.mysql.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,10 +21,10 @@ import java.util.List;
 @Tag(name = "Auth", description = "회원 가입 / 로그인 API")
 public class AuthController {
 
-    private final AuthFacade authFacade;
+    private final AuthService authService;
 
-    public AuthController(AuthFacade authFacade) {
-        this.authFacade = authFacade;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/signup")
@@ -32,7 +32,7 @@ public class AuthController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "가입 완료")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "중복 이메일 등")
     public ResponseEntity<ApiResponse<Void>> signup(@Valid @RequestBody SignupRequest request) {
-        authFacade.signup(request);
+        authService.signup(request);
         return ResponseEntity.ok(ApiResponse.success());
     }
 
@@ -41,14 +41,14 @@ public class AuthController {
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "성공")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "자격 증명 오류")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(authFacade.login(request)));
+        return ResponseEntity.ok(ApiResponse.success(authService.login(request)));
     }
 
     @GetMapping("/errors")
     @Operation(summary = "오류 코드 목록", description = "AuthErrorCode 코드/메시지 목록 반환")
-    public ResponseEntity<ApiResponse<List<AuthErrorItem>>> errors() {
-        List<AuthErrorItem> items = Arrays.stream(AuthErrorCode.values())
-                .map(e -> new AuthErrorItem(e.code(), e.message()))
+    public ResponseEntity<ApiResponse<List<AuthErrorCodeResponse>>> errors() {
+        List<AuthErrorCodeResponse> items = Arrays.stream(AuthErrorCode.values())
+                .map(e -> new AuthErrorCodeResponse(e.code(), e.message()))
                 .toList();
         return ResponseEntity.ok(ApiResponse.success(items));
     }

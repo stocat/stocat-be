@@ -21,16 +21,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class AuthQueryServiceTest {
+class MemberQueryServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
 
-    private AuthQueryService queryService;
+    private MemberQueryService queryService;
 
     @BeforeEach
     void setUp() {
-        queryService = new AuthQueryService(memberRepository);
+        queryService = new MemberQueryService(memberRepository);
     }
 
     @Test
