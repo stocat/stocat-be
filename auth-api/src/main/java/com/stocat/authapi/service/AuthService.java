@@ -52,6 +52,7 @@ public class AuthService {
         String access = jwtProvider.createAccessToken(
                 String.valueOf(member.id()),
                 Map.of(
+                        JwtClaimKeys.MEMBER_ID, member.id(),
                         JwtClaimKeys.EMAIL, member.email(),
                         JwtClaimKeys.ROLE, member.role().name()
                 )
