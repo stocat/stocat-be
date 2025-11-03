@@ -3,15 +3,15 @@ package com.stocat.authapi.infrastructure.consul;
 import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.Response;
 import com.ecwid.consul.v1.kv.model.GetValue;
-import com.stocat.authapi.config.JwtSecretProvider;
+import com.stocat.authapi.security.jwt.JwtSecretProvider;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Component
@@ -19,7 +19,7 @@ public class ConsulJwtSecretProvider implements JwtSecretProvider {
 
     private final ConsulClient consulClient;
     private final String keyPath;
-    private final AtomicReference<Key> cachedKey = new AtomicReference<>();
+    private final AtomicReference<SecretKey> cachedKey = new AtomicReference<>();
 
     public ConsulJwtSecretProvider(
             ConsulClient consulClient,
@@ -48,11 +48,11 @@ public class ConsulJwtSecretProvider implements JwtSecretProvider {
     }
 
     @Override
-    public Key getSigningKey() {
-        Key key = cachedKey.get();
+    public SecretKey getSigningKey() {
+        SecretKey key = cachedKey.get();
         if (key != null) return key;
         reload();
-        Key after = cachedKey.get();
+        SecretKey after = cachedKey.get();
         if (after == null) {
             throw new IllegalStateException("JWT secret is not available from Consul at '" + keyPath + "'");
         }

@@ -1,4 +1,4 @@
-package com.stocat.authapi.config;
+package com.stocat.authapi.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

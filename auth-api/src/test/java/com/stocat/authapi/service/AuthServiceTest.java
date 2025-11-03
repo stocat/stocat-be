@@ -1,7 +1,7 @@
 package com.stocat.authapi.service;
 
-import com.stocat.authapi.config.JwtClaimKeys;
-import com.stocat.authapi.config.JwtProvider;
+import com.stocat.authapi.security.jwt.JwtClaimKeys;
+import com.stocat.authapi.security.jwt.JwtProvider;
 import com.stocat.authapi.controller.dto.AuthResponse;
 import com.stocat.authapi.controller.dto.LoginRequest;
 import com.stocat.authapi.controller.dto.SignupRequest;

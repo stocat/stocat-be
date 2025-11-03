@@ -1,4 +1,4 @@
-package com.stocat.authapi.config;
+package com.stocat.authapi.web.advice;
 
 import com.stocat.authapi.exception.AuthErrorCode;
 import com.stocat.common.mysql.exception.ApiException;

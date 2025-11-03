@@ -1,4 +1,4 @@
-package com.stocat.authapi.config;
+package com.stocat.authapi.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.Keys;
@@ -53,6 +53,16 @@ class JwtProviderTest {
     private JwtSecretProvider fixedSecret() {
         byte[] keyBytes = "stocat-test-secret-key-material-123456".getBytes(StandardCharsets.UTF_8);
         Key key = Keys.hmacShaKeyFor(keyBytes);
-        return () -> key;
+        return new JwtSecretProvider() {
+            @Override
+            public String loadSecret() {
+                return null;
+            }
+
+            @Override
+            public javax.crypto.SecretKey getSigningKey() {
+                return (javax.crypto.SecretKey) key;
+            }
+        };
     }
 }
