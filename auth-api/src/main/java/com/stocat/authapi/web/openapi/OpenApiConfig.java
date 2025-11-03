@@ -1,4 +1,4 @@
-package com.stocat.authapi.config;
+package com.stocat.authapi.web.openapi;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

@@ -1,5 +1,6 @@
-package com.stocat.authapi.config;
+package com.stocat.authapi.security;
 
+import com.stocat.authapi.security.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
