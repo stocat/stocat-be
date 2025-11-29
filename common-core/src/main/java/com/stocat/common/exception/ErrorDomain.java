@@ -1,4 +1,4 @@
-package com.stocat.common.mysql.exception;
+package com.stocat.common.exception;
 
 /**
  * 10,000-sized code ranges per API/module.

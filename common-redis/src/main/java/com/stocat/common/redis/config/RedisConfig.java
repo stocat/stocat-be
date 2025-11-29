@@ -1,4 +1,4 @@
-package com.stocat.common.mysql.redis.config;
+package com.stocat.common.redis.config;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
@@ -15,7 +15,7 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.ReactiveRedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 
-import static com.stocat.common.mysql.redis.constants.CryptoKeys.CRYPTO_TRADES;
+import static com.stocat.common.redis.constants.CryptoKeys.CRYPTO_TRADES;
 
 /**
  * Redis 연결 설정을 담당합니다.

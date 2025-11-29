@@ -1,8 +1,8 @@
 package com.stocat.authapi.web.advice;
 
 import com.stocat.authapi.exception.AuthErrorCode;
-import com.stocat.common.mysql.exception.ApiException;
-import com.stocat.common.mysql.response.ApiResponse;
+import com.stocat.common.exception.ApiException;
+import com.stocat.common.response.ApiResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;

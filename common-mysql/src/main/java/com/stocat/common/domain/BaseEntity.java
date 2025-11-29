@@ -1,4 +1,4 @@
-package com.stocat.common.mysql.domain;
+package com.stocat.common.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

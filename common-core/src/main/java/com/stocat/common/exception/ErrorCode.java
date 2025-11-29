@@ -1,4 +1,4 @@
-package com.stocat.common.mysql.exception;
+package com.stocat.common.exception;
 
 /**
  * Exception code contract for all APIs.

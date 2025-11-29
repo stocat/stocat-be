@@ -1,4 +1,4 @@
-package com.stocat.common.mysql.domain.member.domain;
+package com.stocat.common.domain.member.domain;
 
 public enum AuthProvider {
     LOCAL,

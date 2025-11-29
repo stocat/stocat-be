@@ -1,6 +1,6 @@
-package com.stocat.common.mysql.domain.member.domain;
+package com.stocat.common.domain.member.domain;
 
-import com.stocat.common.mysql.domain.BaseEntity;
+import com.stocat.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

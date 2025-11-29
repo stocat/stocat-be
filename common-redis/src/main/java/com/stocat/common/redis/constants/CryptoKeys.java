@@ -1,4 +1,4 @@
-package com.stocat.common.mysql.redis.constants;
+package com.stocat.common.redis.constants;
 
 public final class CryptoKeys {
 

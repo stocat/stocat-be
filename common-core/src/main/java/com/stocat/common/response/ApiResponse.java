@@ -1,6 +1,6 @@
-package com.stocat.common.mysql.response;
+package com.stocat.common.response;
 
-import com.stocat.common.mysql.exception.ErrorCode;
+import com.stocat.common.exception.ErrorCode;
 
 /**
  * 공통 API 응답 규격 (code/message/data)을 설명하는 레코드.

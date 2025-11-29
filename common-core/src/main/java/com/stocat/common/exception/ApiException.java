@@ -1,4 +1,4 @@
-package com.stocat.common.mysql.exception;
+package com.stocat.common.exception;
 
 import java.util.Map;
 

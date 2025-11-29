@@ -8,7 +8,7 @@ import com.stocat.asset.scraper.crypto.model.AssetsEntity;
 import com.stocat.asset.scraper.crypto.model.enums.AssetsCategory;
 import com.stocat.asset.scraper.crypto.model.enums.Currency;
 import com.stocat.asset.scraper.crypto.repository.AssetsRepository;
-import com.stocat.common.mysql.redis.constants.CryptoKeys;
+import com.stocat.common.redis.constants.CryptoKeys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

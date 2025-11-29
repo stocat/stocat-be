@@ -1,9 +1,9 @@
 package com.stocat.authapi.service.dto;
 
-import com.stocat.common.mysql.domain.member.domain.AuthProvider;
-import com.stocat.common.mysql.domain.member.domain.Member;
-import com.stocat.common.mysql.domain.member.domain.MemberRole;
-import com.stocat.common.mysql.domain.member.domain.MemberStatus;
+import com.stocat.common.domain.member.domain.AuthProvider;
+import com.stocat.common.domain.member.domain.Member;
+import com.stocat.common.domain.member.domain.MemberRole;
+import com.stocat.common.domain.member.domain.MemberStatus;
 
 import java.time.LocalDateTime;
 

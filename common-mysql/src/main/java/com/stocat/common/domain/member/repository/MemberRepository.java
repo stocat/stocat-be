@@ -1,7 +1,7 @@
-package com.stocat.common.mysql.domain.member.repository;
+package com.stocat.common.domain.member.repository;
 
-import com.stocat.common.mysql.domain.member.domain.AuthProvider;
-import com.stocat.common.mysql.domain.member.domain.Member;
+import com.stocat.common.domain.member.domain.AuthProvider;
+import com.stocat.common.domain.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
