@@ -9,10 +9,10 @@ import lombok.*;
 @Entity
 @Table(name = "assets")
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @ToString
+@Builder(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AssetsEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,5 +43,16 @@ public class AssetsEntity extends BaseEntity {
 
     public void deactivate() {
         this.isActive = false;
+    }
+
+    static public AssetsEntity create(String symbol, String koName, String usName, AssetsCategory assetsCategory, Currency currency)  {
+        return AssetsEntity.builder()
+                .symbol(symbol)
+                .koName(koName)
+                .usName(usName)
+                .category(assetsCategory)
+                .currency(currency)
+                .isActive(true)
+                .build();
     }
 }
