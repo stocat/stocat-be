@@ -16,6 +16,6 @@ public enum TradeSide {
         } else if (side.equals("BID")) {
             return BUY;
         }
-        throw new ApiException(AssetScraperErrorCode.INVALID_REQUEST); // TODO: 적절?
+        throw new ApiException(AssetScraperErrorCode.INVALID_UPBIT_SIDE);
     }
 }
