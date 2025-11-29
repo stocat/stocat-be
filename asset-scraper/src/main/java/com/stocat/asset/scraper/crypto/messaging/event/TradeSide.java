@@ -1,5 +1,8 @@
 package com.stocat.asset.scraper.crypto.messaging.event;
 
+import com.stocat.asset.scraper.crypto.exception.AssetScraperErrorCode;
+import com.stocat.common.mysql.exception.ApiException;
+
 /**
  * 매매 구분
  */
@@ -13,7 +16,6 @@ public enum TradeSide {
         } else if (side.equals("BID")) {
             return BUY;
         }
-        // TODO: 에러 핸들링
-        throw new IllegalArgumentException();
+        throw new ApiException(AssetScraperErrorCode.INVALID_REQUEST); // TODO: 적절?
     }
 }
