@@ -3,13 +3,18 @@ package com.stocat.asset.scraper.crypto.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stocat.asset.scraper.crypto.dto.MarketInfo;
+import com.stocat.asset.scraper.crypto.exception.AssetScraperErrorCode;
 import com.stocat.asset.scraper.crypto.messaging.event.TradeInfo;
 import com.stocat.asset.scraper.crypto.model.AssetsEntity;
 import com.stocat.asset.scraper.crypto.model.enums.AssetsCategory;
 import com.stocat.asset.scraper.crypto.model.enums.Currency;
 import com.stocat.asset.scraper.crypto.repository.AssetsRepository;
+import com.stocat.common.mysql.exception.ApiException;
 import com.stocat.common.mysql.redis.constants.CryptoKeys;
 import jakarta.annotation.PostConstruct;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
@@ -18,9 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * Redis의 "crypto:subscribe_codes" 리스트를 하루에 한 번 읽어와서
@@ -77,10 +79,21 @@ public class SubscriptionCodeService {
      */
     @Transactional
     public void refreshHotAndSubscribeCodes(Set<MarketInfo> targetSymbols) {
+        if (targetSymbols == null || targetSymbols.isEmpty()) {
+            log.warn("타깃 심볼이 비어 있어 Redis 갱신을 건너뜁니다.");
+            throw new ApiException(AssetScraperErrorCode.EMPTY_TARGET_SYMBOLS);
+        }
+
         assetsRepository.findByIsActiveIsTrue()
                 .forEach(AssetsEntity::deactivate);
 
         List<AssetsEntity> newAssets = targetSymbols.stream()
+                .peek(info -> {
+                    if (info == null) {
+                        log.error("[Symbol] null MarketInfo detected");
+                    }
+                })
+                .filter(Objects::nonNull)
                 .map(info -> AssetsEntity.create(
                         info.code(), info.koreanName(), info.englishName(), AssetsCategory.CRYPTO, Currency.KRW
                         ))
@@ -90,6 +103,7 @@ public class SubscriptionCodeService {
 
 
         String[] codes = targetSymbols.stream()
+                .filter(Objects::nonNull)
                 .map(MarketInfo::code)
                 .toArray(String[]::new);
 
@@ -109,6 +123,10 @@ public class SubscriptionCodeService {
      */
     public Mono<Long> publishTrades(TradeInfo dto) {
         try {
+            if (dto == null) {
+                throw new ApiException(AssetScraperErrorCode.EMPTY_TRADE_INFOS);
+            }
+
             String json = mapper.writeValueAsString(dto);
             log.debug("Redis 퍼블리시 준비 - channel={}, payload={}", CryptoKeys.CRYPTO_TRADES, json);
             return redisTemplate.convertAndSend(CryptoKeys.CRYPTO_TRADES, json)
