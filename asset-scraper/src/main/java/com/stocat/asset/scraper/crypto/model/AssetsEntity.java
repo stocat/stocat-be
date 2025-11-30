@@ -35,13 +35,6 @@ public class AssetsEntity extends BaseEntity {
     @Column(nullable = false, length = 10)
     private Currency currency;
 
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive;
-
 //    @Column(name = "raw_json", columnDefinition = "longtext", nullable = false)
 //    private String rawJson;
-
-    public void deactivate() {
-        this.isActive = false;
-    }
 }

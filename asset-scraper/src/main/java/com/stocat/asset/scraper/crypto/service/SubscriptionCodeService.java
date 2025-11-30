@@ -70,16 +70,13 @@ public class SubscriptionCodeService {
     }
 
     /**
-     * 0) DB에 기존 symbol들 isActive를 false로 update, 새 심볼 정보 insert
+     * 0) DB에 새 심볼 정보 insert
      * 1) 기존 hotKey 리스트 삭제 후 RPUSH
      * 2) 같은 5개 코드를 subscription.redisKey에도 RPUSH
      * → SubscriptionCodeService가 자동 재구독
      */
     @Transactional
     public void refreshHotAndSubscribeCodes(Set<MarketInfo> targetSymbols) {
-        assetsRepository.findByIsActiveIsTrue()
-                .forEach(AssetsEntity::deactivate);
-
         List<AssetsEntity> newAssets = targetSymbols.stream()
                 .map(info -> AssetsEntity.builder()
                         .symbol(info.code())
@@ -87,7 +84,6 @@ public class SubscriptionCodeService {
                         .usName(info.englishName())
                         .category(AssetsCategory.CRYPTO)
                         .currency(Currency.KRW)
-                        .isActive(true)
                         .build())
                 .toList();
         assetsRepository.saveAll(newAssets);
