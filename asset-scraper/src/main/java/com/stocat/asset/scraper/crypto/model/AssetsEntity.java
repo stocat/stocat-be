@@ -34,7 +34,4 @@ public class AssetsEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
     private Currency currency;
-
-//    @Column(name = "raw_json", columnDefinition = "longtext", nullable = false)
-//    private String rawJson;
 }
