@@ -103,7 +103,7 @@ public class UpbitCryptoScrapeService {
      */
     private TradeInfo toTradeInfo(JsonNode node) {
         String code = node.path("cd").asText();
-        TradeSide side = TradeSide.fromUpbitAb(node.path("ab").asText());
+        TradeSide side = TradeSide.fromUpbitSide(node.path("ab").asText());
         BigDecimal qty = TradeParsingUtil.readBigDecimal(node, "tv");
         BigDecimal price = TradeParsingUtil.readBigDecimal(node, "tp");
         Currency currency = Currency.fromMarket(code);
