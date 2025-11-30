@@ -2,13 +2,13 @@ package com.stocat.asset.scraper.crypto.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stocat.common.redis.constants.CryptoKeys;
 import com.stocat.asset.scraper.crypto.dto.MarketInfo;
 import com.stocat.asset.scraper.crypto.messaging.event.TradeInfo;
 import com.stocat.asset.scraper.crypto.model.AssetsEntity;
 import com.stocat.asset.scraper.crypto.model.enums.AssetsCategory;
 import com.stocat.asset.scraper.crypto.model.enums.Currency;
 import com.stocat.asset.scraper.crypto.repository.AssetsRepository;
+import com.stocat.common.redis.constants.CryptoKeys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,8 +1,8 @@
 package com.stocat.asset.scraper.crypto.model;
 
-import com.stocat.common.mysql.model.BaseEntity;
 import com.stocat.asset.scraper.crypto.model.enums.AssetsCategory;
 import com.stocat.asset.scraper.crypto.model.enums.Currency;
+import com.stocat.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
