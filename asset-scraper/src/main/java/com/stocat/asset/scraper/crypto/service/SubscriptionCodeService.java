@@ -78,13 +78,13 @@ public class SubscriptionCodeService {
     @Transactional
     public void refreshHotAndSubscribeCodes(Set<MarketInfo> targetSymbols) {
         List<AssetsEntity> newAssets = targetSymbols.stream()
-                .map(info -> AssetsEntity.builder()
-                        .symbol(info.code())
-                        .koName(info.koreanName())
-                        .usName(info.englishName())
-                        .category(AssetsCategory.CRYPTO)
-                        .currency(Currency.KRW)
-                        .build())
+                .map(info -> AssetsEntity.create(
+                        info.code(),
+                        info.koreanName(),
+                        info.englishName(),
+                        AssetsCategory.CRYPTO,
+                        Currency.KRW)
+                )
                 .toList();
         assetsRepository.saveAll(newAssets);
         log.debug("DB 갱신 완료 - 저장된 자산 수: {}", newAssets.size());

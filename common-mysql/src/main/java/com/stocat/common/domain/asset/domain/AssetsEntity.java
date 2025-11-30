@@ -7,10 +7,10 @@ import lombok.*;
 @Entity
 @Table(name = "assets")
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @ToString
+@Builder(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AssetsEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,4 +32,14 @@ public class AssetsEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
     private Currency currency;
+
+    static public AssetsEntity create(String symbol, String koName, String usName, AssetsCategory assetsCategory, Currency currency)  {
+        return AssetsEntity.builder()
+                .symbol(symbol)
+                .koName(koName)
+                .usName(usName)
+                .category(assetsCategory)
+                .currency(currency)
+                .build();
+    }
 }
