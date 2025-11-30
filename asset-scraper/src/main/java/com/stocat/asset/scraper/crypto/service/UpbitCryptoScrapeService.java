@@ -48,7 +48,7 @@ public class UpbitCryptoScrapeService {
                                         .thenMany(
                                                 session.receive()
                                                         .map(WebSocketMessage::getPayloadAsText)
-                                                        .doOnSubscribe(sub -> log.debug("Upbit WebSocket 세션 수신 시작"))
+                                                        .doOnSubscribe( _ -> log.debug("Upbit WebSocket 세션 수신 시작"))
                                                         .flatMap(this::parseJson)
                                                         .filter(this::isTrade)
                                                         .map(this::toTradeInfo)
@@ -57,7 +57,7 @@ public class UpbitCryptoScrapeService {
                                         )
                                         .then()
                         )
-                        .doOnSubscribe(sub -> log.debug("Upbit WebSocket 실행 스케줄 등록"))
+                        .doOnSubscribe(_ -> log.debug("Upbit WebSocket 실행 스케줄 등록"))
                         .doOnError(error -> log.error("Upbit WebSocket 실행 중 오류", error))
                         .doOnError(sink::error)
                         .subscribeOn(Schedulers.boundedElastic())
@@ -88,7 +88,7 @@ public class UpbitCryptoScrapeService {
      */
     private Mono<JsonNode> parseJson(String raw) {
         return Mono.fromCallable(() -> mapper.readTree(raw))
-                .onErrorResume(e -> Mono.empty());
+                .onErrorResume(_ -> Mono.empty());
     }
 
     /**
