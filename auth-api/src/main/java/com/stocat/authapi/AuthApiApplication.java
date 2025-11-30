@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
         scanBasePackages = {
                 "com.stocat.authapi",
                 "com.stocat.common.redis",
-                "com.stocat.common.mysql"
+                "com.stocat.common"
         }
 )
 public class AuthApiApplication {
