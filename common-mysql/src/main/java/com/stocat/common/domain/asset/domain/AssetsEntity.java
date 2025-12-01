@@ -1,7 +1,5 @@
-package com.stocat.asset.scraper.crypto.model;
+package com.stocat.common.domain.asset.domain;
 
-import com.stocat.asset.scraper.crypto.model.enums.AssetsCategory;
-import com.stocat.asset.scraper.crypto.model.enums.Currency;
 import com.stocat.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,10 +7,10 @@ import lombok.*;
 @Entity
 @Table(name = "assets")
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @ToString
+@Builder(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AssetsEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,13 +33,13 @@ public class AssetsEntity extends BaseEntity {
     @Column(nullable = false, length = 10)
     private Currency currency;
 
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive;
-
-//    @Column(name = "raw_json", columnDefinition = "longtext", nullable = false)
-//    private String rawJson;
-
-    public void deactivate() {
-        this.isActive = false;
+    static public AssetsEntity create(String symbol, String koName, String usName, AssetsCategory assetsCategory, Currency currency)  {
+        return AssetsEntity.builder()
+                .symbol(symbol)
+                .koName(koName)
+                .usName(usName)
+                .category(assetsCategory)
+                .currency(currency)
+                .build();
     }
 }

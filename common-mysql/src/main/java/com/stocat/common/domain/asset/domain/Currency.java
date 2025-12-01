@@ -1,4 +1,4 @@
-package com.stocat.asset.scraper.crypto.model.enums;
+package com.stocat.common.domain.asset.domain;
 
 import java.util.Arrays;
 

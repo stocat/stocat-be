@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stocat.asset.scraper.crypto.config.UpbitApiProperties;
 import com.stocat.asset.scraper.crypto.messaging.event.TradeInfo;
 import com.stocat.asset.scraper.crypto.messaging.event.TradeSide;
-import com.stocat.asset.scraper.crypto.model.enums.Currency;
+import com.stocat.common.domain.asset.domain.Currency;
 import com.stocat.asset.scraper.crypto.util.TradeParsingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +48,7 @@ public class UpbitCryptoScrapeService {
                                         .thenMany(
                                                 session.receive()
                                                         .map(WebSocketMessage::getPayloadAsText)
-                                                        .doOnSubscribe(sub -> log.debug("Upbit WebSocket 세션 수신 시작"))
+                                                        .doOnSubscribe( _ -> log.debug("Upbit WebSocket 세션 수신 시작"))
                                                         .flatMap(this::parseJson)
                                                         .filter(this::isTrade)
                                                         .map(this::toTradeInfo)
@@ -57,7 +57,7 @@ public class UpbitCryptoScrapeService {
                                         )
                                         .then()
                         )
-                        .doOnSubscribe(sub -> log.debug("Upbit WebSocket 실행 스케줄 등록"))
+                        .doOnSubscribe(_ -> log.debug("Upbit WebSocket 실행 스케줄 등록"))
                         .doOnError(error -> log.error("Upbit WebSocket 실행 중 오류", error))
                         .doOnError(sink::error)
                         .subscribeOn(Schedulers.boundedElastic())
@@ -88,7 +88,7 @@ public class UpbitCryptoScrapeService {
      */
     private Mono<JsonNode> parseJson(String raw) {
         return Mono.fromCallable(() -> mapper.readTree(raw))
-                .onErrorResume(e -> Mono.empty());
+                .onErrorResume(_ -> Mono.empty());
     }
 
     /**
@@ -103,7 +103,7 @@ public class UpbitCryptoScrapeService {
      */
     private TradeInfo toTradeInfo(JsonNode node) {
         String code = node.path("cd").asText();
-        TradeSide side = TradeSide.fromUpbitAb(node.path("ab").asText());
+        TradeSide side = TradeSide.fromUpbitSide(node.path("ab").asText());
         BigDecimal qty = TradeParsingUtil.readBigDecimal(node, "tv");
         BigDecimal price = TradeParsingUtil.readBigDecimal(node, "tp");
         Currency currency = Currency.fromMarket(code);
