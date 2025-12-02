@@ -6,7 +6,7 @@ import com.stocat.tradeapi.exception.TradeErrorCode;
 /**
  * 매매 구분
  */
-// TODO: Asset Scraper와 통합 여부 고민
+// TODO: Asset Scraper와 통합 여부
 public enum OrderSide {
     BUY,
     SELL;

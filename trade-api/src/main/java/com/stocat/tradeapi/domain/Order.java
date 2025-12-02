@@ -1,6 +1,8 @@
 package com.stocat.tradeapi.domain;
 
 import com.stocat.common.domain.BaseEntity;
+import com.stocat.common.domain.asset.domain.AssetsCategory;
+import com.stocat.common.domain.asset.domain.Currency;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,6 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -53,4 +56,7 @@ public class Order extends BaseEntity {
 
     @Column(nullable = false)
     private BigDecimal price;
+
+    @Column(nullable = true)
+    private LocalDateTime executedAt;
 }
