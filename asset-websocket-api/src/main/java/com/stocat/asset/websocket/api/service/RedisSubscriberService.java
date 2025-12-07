@@ -1,4 +1,4 @@
-package com.stocat.trade.websocket.api.service;
+package com.stocat.asset.websocket.api.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

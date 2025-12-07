@@ -4,7 +4,7 @@ include 'asset-scraper'
 include 'auth-api'
 
 include 'trade-api'
-include 'trade-websocket-api'
+include 'asset-websocket-api'
 
 include 'common-redis'
 include 'common-mysql'

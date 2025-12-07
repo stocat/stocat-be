@@ -1,7 +1,7 @@
-package com.stocat.trade.websocket.api.websocket;
+package com.stocat.asset.websocket.api.websocket;
 
 
-import com.stocat.trade.websocket.api.service.RedisSubscriberService;
+import com.stocat.asset.websocket.api.service.RedisSubscriberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

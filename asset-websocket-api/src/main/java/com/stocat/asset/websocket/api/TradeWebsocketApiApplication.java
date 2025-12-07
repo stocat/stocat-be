@@ -1,4 +1,4 @@
-package com.stocat.trade.websocket.api;
+package com.stocat.asset.websocket.api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
