@@ -6,6 +6,6 @@ spring:
       host: 127.0.0.1
       port: 6380
 
-#logging:
-#    level:
-#      com.stocat.trade.websocket.api: DEBUG
+logging:
+    level:
+      com.stocat.asset.websocket.api: DEBUG

@@ -3,7 +3,7 @@ package com.stocat.authapi.service;
 import com.stocat.authapi.exception.AuthErrorCode;
 import com.stocat.authapi.service.dto.MemberDto;
 import com.stocat.common.domain.member.domain.AuthProvider;
-import com.stocat.common.domain.member.domain.Member;
+import com.stocat.common.domain.member.domain.MemberEntity;
 import com.stocat.common.domain.member.domain.MemberRole;
 import com.stocat.common.domain.member.domain.MemberStatus;
 import com.stocat.common.domain.member.repository.MemberRepository;
@@ -35,7 +35,7 @@ class MemberQueryServiceTest {
 
     @Test
     void 이메일로_조회하면_DTO로_변환한다() {
-        Member member = Member.builder()
+        MemberEntity member = MemberEntity.builder()
                 .id(1L)
                 .nickname("고냥이")
                 .email("cat@stocat.com")

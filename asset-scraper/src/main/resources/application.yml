@@ -25,6 +25,6 @@ upbit:
     ws-url: wss://api.upbit.com/websocket/v1
     top-limit: 5
 
-#logging:
-#  level:
-#    com.stocat.asset.scraper: DEBUG
+logging:
+  level:
+    com.stocat.asset.scraper: DEBUG
