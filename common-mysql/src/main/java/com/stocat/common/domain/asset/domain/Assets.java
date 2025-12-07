@@ -11,7 +11,7 @@ import lombok.*;
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AssetsEntity extends BaseEntity {
+public class Assets extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,8 +33,8 @@ public class AssetsEntity extends BaseEntity {
     @Column(nullable = false, length = 10)
     private Currency currency;
 
-    static public AssetsEntity create(String symbol, String koName, String usName, AssetsCategory assetsCategory, Currency currency)  {
-        return AssetsEntity.builder()
+    static public Assets create(String symbol, String koName, String usName, AssetsCategory assetsCategory, Currency currency)  {
+        return Assets.builder()
                 .symbol(symbol)
                 .koName(koName)
                 .usName(usName)
