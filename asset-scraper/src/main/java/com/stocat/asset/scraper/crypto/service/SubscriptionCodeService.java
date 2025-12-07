@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stocat.asset.scraper.crypto.dto.MarketInfo;
 import com.stocat.asset.scraper.crypto.messaging.event.TradeInfo;
-import com.stocat.common.domain.asset.domain.Assets;
+import com.stocat.common.domain.asset.domain.AssetsEntity;
 import com.stocat.common.domain.asset.domain.AssetsCategory;
 import com.stocat.common.domain.asset.domain.Currency;
 import com.stocat.common.domain.asset.repository.AssetsRepository;
@@ -77,8 +77,8 @@ public class SubscriptionCodeService {
      */
     @Transactional
     public void refreshHotAndSubscribeCodes(Set<MarketInfo> targetSymbols) {
-        List<Assets> newAssets = targetSymbols.stream()
-                .map(info -> Assets.create(
+        List<AssetsEntity> newAssets = targetSymbols.stream()
+                .map(info -> AssetsEntity.create(
                         info.code(),
                         info.koreanName(),
                         info.englishName(),

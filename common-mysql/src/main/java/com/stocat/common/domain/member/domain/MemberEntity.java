@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(of = "id", callSuper = false)
 @Table(name = "members")
 @Entity
-public class Member extends BaseEntity {
+public class MemberEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,8 +46,8 @@ public class Member extends BaseEntity {
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
 
-    public static Member create(String nickname, String email, String password, AuthProvider provider, String providerId, MemberStatus status, MemberRole role) {
-        return Member.builder()
+    public static MemberEntity create(String nickname, String email, String password, AuthProvider provider, String providerId, MemberStatus status, MemberRole role) {
+        return MemberEntity.builder()
                 .nickname(nickname)
                 .email(email)
                 .password(password)

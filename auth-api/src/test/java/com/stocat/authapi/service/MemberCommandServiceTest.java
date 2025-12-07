@@ -1,7 +1,7 @@
 package com.stocat.authapi.service;
 
 import com.stocat.authapi.exception.AuthErrorCode;
-import com.stocat.common.domain.member.domain.Member;
+import com.stocat.common.domain.member.domain.MemberEntity;
 import com.stocat.common.domain.member.repository.MemberRepository;
 import com.stocat.common.exception.ApiException;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,12 +58,12 @@ class MemberCommandServiceTest {
         when(memberRepository.existsByNickname(anyString())).thenReturn(false);
         when(passwordEncoder.encode("plain")).thenReturn("encoded");
         // echo-back saved entity
-        when(memberRepository.save(any(Member.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(memberRepository.save(any(MemberEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Member saved = service.createLocalMember("고냥이", "cat@stocat.com", "plain");
+        MemberEntity saved = service.createLocalMember("고냥이", "cat@stocat.com", "plain");
 
         assertThat(saved.getPassword()).isEqualTo("encoded");
         verify(passwordEncoder).encode("plain");
-        verify(memberRepository).save(any(Member.class));
+        verify(memberRepository).save(any(MemberEntity.class));
     }
 }

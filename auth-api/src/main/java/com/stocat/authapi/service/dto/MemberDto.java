@@ -1,7 +1,7 @@
 package com.stocat.authapi.service.dto;
 
 import com.stocat.common.domain.member.domain.AuthProvider;
-import com.stocat.common.domain.member.domain.Member;
+import com.stocat.common.domain.member.domain.MemberEntity;
 import com.stocat.common.domain.member.domain.MemberRole;
 import com.stocat.common.domain.member.domain.MemberStatus;
 
@@ -21,7 +21,7 @@ public record MemberDto(
         LocalDateTime updatedAt,
         LocalDateTime deletedAt
 ) {
-    public static MemberDto from(Member m) {
+    public static MemberDto from(MemberEntity m) {
         return new MemberDto(
                 m.getId(),
                 m.getNickname(),

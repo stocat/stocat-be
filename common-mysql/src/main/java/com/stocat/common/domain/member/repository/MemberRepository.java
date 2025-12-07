@@ -1,16 +1,16 @@
 package com.stocat.common.domain.member.repository;
 
 import com.stocat.common.domain.member.domain.AuthProvider;
-import com.stocat.common.domain.member.domain.Member;
+import com.stocat.common.domain.member.domain.MemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
 
-    Optional<Member> findByEmail(String email);
+    Optional<MemberEntity> findByEmail(String email);
 
-    Optional<Member> findByProviderAndProviderId(AuthProvider provider, String providerId);
+    Optional<MemberEntity> findByProviderAndProviderId(AuthProvider provider, String providerId);
 
     boolean existsByEmail(String email);
 
